@@ -396,33 +396,8 @@ export default {
             return;
           }
 
-          // Wait a bit for iframe to be ready
-          setTimeout(() => {
-            try {
-              const doc =
-                iframe.contentDocument || iframe.contentWindow?.document;
-
-              if (!doc) {
-                console.error("Cannot access iframe document");
-                this.addConsoleMessage(
-                  "error",
-                  "Cannot access iframe document"
-                );
-                return;
-              }
-
-              // Clear and write new content
-              doc.open();
-              doc.write(this.activeFile.content);
-              doc.close();
-            } catch (docError) {
-              console.error("Error writing to iframe:", docError);
-              this.addConsoleMessage(
-                "error",
-                `Error executing HTML: ${docError.message}`
-              );
-            }
-          }, 100);
+          // Try multiple approaches for maximum compatibility
+          this.loadHTMLContent(iframe, this.activeFile.content);
         } catch (error) {
           console.error("Error in runHTMLCode:", error);
           this.addConsoleMessage(
@@ -431,6 +406,91 @@ export default {
           );
         }
       });
+    },
+
+    loadHTMLContent(iframe, htmlContent) {
+      // Method 1: Try using data URL (most compatible)
+      try {
+        const dataUrl =
+          "data:text/html;charset=utf-8," + encodeURIComponent(htmlContent);
+        iframe.src = dataUrl;
+
+        // Add load event listener to confirm success
+        const onLoad = () => {
+          iframe.removeEventListener("load", onLoad);
+          this.addConsoleMessage("log", "HTML executed successfully");
+        };
+
+        const onError = () => {
+          iframe.removeEventListener("error", onError);
+          iframe.removeEventListener("load", onLoad);
+          // Fallback to document.write method
+          this.fallbackDocumentWrite(iframe, htmlContent);
+        };
+
+        iframe.addEventListener("load", onLoad);
+        iframe.addEventListener("error", onError);
+
+        // Fallback after timeout
+        setTimeout(() => {
+          iframe.removeEventListener("load", onLoad);
+          iframe.removeEventListener("error", onError);
+        }, 3000);
+      } catch (dataUrlError) {
+        console.error("Data URL method failed:", dataUrlError);
+        this.fallbackDocumentWrite(iframe, htmlContent);
+      }
+    },
+
+    fallbackDocumentWrite(iframe, htmlContent) {
+      // Method 2: Fallback to document.write (for when data URL fails)
+      setTimeout(() => {
+        try {
+          const doc = iframe.contentDocument || iframe.contentWindow?.document;
+
+          if (!doc) {
+            console.error("Cannot access iframe document");
+            this.addConsoleMessage("error", "Cannot access iframe document");
+            return;
+          }
+
+          // Clear and write new content
+          doc.open();
+          doc.write(htmlContent);
+          doc.close();
+
+          this.addConsoleMessage(
+            "log",
+            "HTML executed successfully (fallback method)"
+          );
+        } catch (docError) {
+          console.error("Error writing to iframe:", docError);
+          this.addConsoleMessage(
+            "error",
+            `Error executing HTML: ${docError.message}`
+          );
+
+          // Method 3: Final fallback using srcdoc
+          this.finalFallbackSrcDoc(iframe, htmlContent);
+        }
+      }, 100);
+    },
+
+    finalFallbackSrcDoc(iframe, htmlContent) {
+      // Method 3: Final fallback using srcdoc attribute
+      try {
+        iframe.srcdoc = htmlContent;
+        this.addConsoleMessage(
+          "log",
+          "HTML executed successfully (srcdoc method)"
+        );
+      } catch (srcdocError) {
+        console.error("All methods failed:", srcdocError);
+        this.addConsoleMessage(
+          "error",
+          "All HTML execution methods failed. Please check your HTML syntax."
+        );
+      }
     },
     runJavaScriptCode() {
       this.consoleMessages = [];
