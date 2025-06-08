@@ -290,40 +290,60 @@ console.log(greet('World'));`
       return content;
     },
     highlightHTML(code) {
+      const ampRegex = /&/g;
+      const ltRegex = /</g;
+      const gtRegex = />/g;
+      const tagRegex = /(&lt;\/?)([\w-]+)(.*?)(&gt;)/g;
+      const attrRegex = /([\w-]+)(=)("[^"]*")/g;
+      const commentRegex = /(&lt;!--[\s\S]*?--&gt;)/g;
+
       return code
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/(&lt;\/?)([\w-]+)(.*?)(&gt;)/g, '$1<span class="html-tag">$2</span>$3$4')
-        .replace(/([\w-]+)(=)("[^"]*")/g, '<span class="html-attr">$1</span>$2<span class="html-value">$3</span>')
-        .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="html-comment">$1</span>');
+        .replace(ampRegex, '&amp;')
+        .replace(ltRegex, '&lt;')
+        .replace(gtRegex, '&gt;')
+        .replace(tagRegex, '$1<span class="html-tag">$2</span>$3$4')
+        .replace(attrRegex, '<span class="html-attr">$1</span>$2<span class="html-value">$3</span>')
+        .replace(commentRegex, '<span class="html-comment">$1</span>');
     },
     highlightCSS(code) {
+      const ampRegex = /&/g;
+      const ltRegex = /</g;
+      const gtRegex = />/g;
+      const commentRegex = /(\/\*[\s\S]*?\*\/)/g;
+      const selectorRegex = /([.#]?[\w-]+)(\s*{)/g;
+      const propertyRegex = /([\w-]+)(\s*:)/g;
+      const valueRegex = /(:)([\s\S]*?)(;)/g;
+
       return code
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="css-comment">$1</span>')
-        .replace(/([.#]?[\w-]+)(\s*{)/g, '<span class="css-selector">$1</span>$2')
-        .replace(/([\w-]+)(\s*:)/g, '<span class="css-property">$1</span>$2')
-        .replace(/(:)([\s\S]*?)(;)/g, '$1<span class="css-value">$2</span>$3');
+        .replace(ampRegex, '&amp;')
+        .replace(ltRegex, '&lt;')
+        .replace(gtRegex, '&gt;')
+        .replace(commentRegex, '<span class="css-comment">$1</span>')
+        .replace(selectorRegex, '<span class="css-selector">$1</span>$2')
+        .replace(propertyRegex, '<span class="css-property">$1</span>$2')
+        .replace(valueRegex, '$1<span class="css-value">$2</span>$3');
     },
     highlightJavaScript(code) {
       const keywords = ['function', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'return', 'true', 'false', 'null', 'undefined'];
 
+      const ampRegex = /&/g;
+      const ltRegex = /</g;
+      const gtRegex = />/g;
+      const commentLineRegex = /(\/\/.*$)/gm;
+      const commentBlockRegex = /(\/\*[\s\S]*?\*\/)/g;
+      const stringRegex = /('.*?'|".*?")/g;
+
       let highlighted = code
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/(\/\/.*$)/gm, '<span class="js-comment">$1</span>')
-        .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="js-comment">$1</span>')
-        .replace(/('.*?'|".*?")/g, '<span class="js-string">$1</span>');
+        .replace(ampRegex, '&amp;')
+        .replace(ltRegex, '&lt;')
+        .replace(gtRegex, '&gt;')
+        .replace(commentLineRegex, '<span class="js-comment">$1</span>')
+        .replace(commentBlockRegex, '<span class="js-comment">$1</span>')
+        .replace(stringRegex, '<span class="js-string">$1</span>');
 
       keywords.forEach(keyword => {
-        highlighted = highlighted.replace(
-          new RegExp(`\\b(${keyword})\\b`, 'g'),
-          '<span class="js-keyword">$1</span>'
-        );
+        const keywordRegex = new RegExp('\\b(' + keyword + ')\\b', 'g');
+        highlighted = highlighted.replace(keywordRegex, '<span class="js-keyword">$1</span>');
       });
 
       return highlighted;
