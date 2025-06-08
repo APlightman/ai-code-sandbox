@@ -473,6 +473,12 @@ export default {
     },
 
     loadHTMLContent(iframe, htmlContent) {
+      // Validate input
+      if (!iframe || !htmlContent) {
+        this.addConsoleMessage("error", "Invalid iframe or content");
+        return;
+      }
+
       // Method 1: Try using data URL (most compatible)
       try {
         const dataUrl =
