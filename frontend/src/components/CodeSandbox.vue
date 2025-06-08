@@ -531,6 +531,13 @@ export default {
 
       this.$nextTick(() => {
         try {
+          const iframe = this.$refs.outputFrame;
+
+          if (!iframe) {
+            this.addConsoleMessage("error", "Output iframe not found");
+            return;
+          }
+
           const cssContent = this.activeFile.content;
           const htmlContent = [
             "<!DOCTYPE html>",
@@ -541,7 +548,7 @@ export default {
             "    <title>CSS Preview</title>",
             "    <style>" + cssContent + "</style>",
             "</head>",
-            "<body>",
+            '<body style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6;">',
             "    <h1>CSS Preview</h1>",
             "    <p>This is a preview of your CSS styles.</p>",
             '    <div class="example">Example content with custom styles</div>',
@@ -549,42 +556,17 @@ export default {
             '    <div class="container">',
             "        <h2>Sample Content</h2>",
             '        <p class="text">Apply your CSS styles to see changes!</p>',
+            "        <ul>",
+            "            <li>List item 1</li>",
+            "            <li>List item 2</li>",
+            "        </ul>",
             "    </div>",
             "</body>",
             "</html>",
           ].join("\n");
 
-          setTimeout(() => {
-            try {
-              const iframe = this.$refs.outputFrame;
-
-              if (!iframe) {
-                this.addConsoleMessage("error", "Output iframe not found");
-                return;
-              }
-
-              const doc =
-                iframe.contentDocument || iframe.contentWindow?.document;
-
-              if (!doc) {
-                this.addConsoleMessage(
-                  "error",
-                  "Cannot access iframe document"
-                );
-                return;
-              }
-
-              doc.open();
-              doc.write(htmlContent);
-              doc.close();
-            } catch (docError) {
-              console.error("Error writing CSS preview:", docError);
-              this.addConsoleMessage(
-                "error",
-                `Error displaying CSS preview: ${docError.message}`
-              );
-            }
-          }, 100);
+          // Use the same robust loading method as HTML
+          this.loadHTMLContent(iframe, htmlContent);
         } catch (error) {
           console.error("Error in showCSSPreview:", error);
           this.addConsoleMessage(
