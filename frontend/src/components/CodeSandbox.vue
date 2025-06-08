@@ -164,6 +164,14 @@ export default {
       );
     },
   },
+  mounted() {
+    // Initialize iframe with welcome content after component is mounted
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.initializeOutput();
+      }, 500);
+    });
+  },
   methods: {
     getWelcomeHTML() {
       return [
