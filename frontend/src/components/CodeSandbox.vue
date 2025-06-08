@@ -32,7 +32,8 @@
               v-if="files.length > 1"
               @click.stop="removeFile(file.id)"
               class="close-tab"
-            >×</span>
+              >×</span
+            >
           </button>
           <button @click="addNewFile" class="add-file-button">
             <span class="button-icon">+</span>
@@ -41,14 +42,20 @@
 
         <div class="editor-container">
           <div class="editor-toolbar">
-            <select v-model="activeFile.type" @change="updateFileType" class="language-selector">
+            <select
+              v-model="activeFile.type"
+              @change="updateFileType"
+              class="language-selector"
+            >
               <option value="html">HTML</option>
               <option value="css">CSS</option>
               <option value="javascript">JavaScript</option>
             </select>
             <div class="editor-info">
               <span class="line-count">Lines: {{ getLineCount() }}</span>
-              <span class="char-count">Characters: {{ activeFile.content.length }}</span>
+              <span class="char-count"
+                >Characters: {{ activeFile.content.length }}</span
+              >
             </div>
           </div>
 
@@ -58,7 +65,9 @@
                 v-for="line in getLineCount()"
                 :key="line"
                 class="line-number"
-              >{{ line }}</div>
+              >
+                {{ line }}
+              </div>
             </div>
             <textarea
               v-model="activeFile.content"
@@ -83,7 +92,10 @@
         <div class="output-header">
           <h3>Output</h3>
           <div class="output-controls">
-            <button @click="toggleConsole" :class="['console-toggle', { active: showConsole }]">
+            <button
+              @click="toggleConsole"
+              :class="['console-toggle', { active: showConsole }]"
+            >
               Console
             </button>
           </div>
@@ -105,7 +117,9 @@
                 :key="index"
                 :class="['console-message', message.type]"
               >
-                <span class="message-type">[{{ message.type.toUpperCase() }}]</span>
+                <span class="message-type"
+                  >[{{ message.type.toUpperCase() }}]</span
+                >
                 <span class="message-content">{{ message.content }}</span>
                 <span class="message-time">{{ message.time }}</span>
               </div>
@@ -119,92 +133,52 @@
 
 <script>
 export default {
-  name: 'CodeSandbox',
+  name: "CodeSandbox",
   data() {
     return {
       files: [
         {
           id: 1,
-          name: 'index.html',
-          type: 'html',
-          content: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Sandbox</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        .welcome-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="welcome-box">
-            <h1>🚀 Welcome to Code Sandbox!</h1>
-            <p>Start coding and see your results instantly!</p>
-            <button onclick="showMessage()">Click me!</button>
-        </div>
-    </div>
-
-    <script>
-        function showMessage() {
-            alert('Hello from Code Sandbox! 🎉');
-            console.log('Button was clicked!');
-        }
-    </script>
-</body>
-</html>`
-        }
+          name: "index.html",
+          type: "html",
+          content: this.getWelcomeHTML(),
+        },
       ],
       activeFileId: 1,
       nextFileId: 2,
       showConsole: false,
-      consoleMessages: []
-    }
+      consoleMessages: [],
+    };
   },
   computed: {
     activeFile() {
-      return this.files.find(file => file.id === this.activeFileId) || this.files[0];
+      return (
+        this.files.find((file) => file.id === this.activeFileId) ||
+        this.files[0]
+      );
     },
     canRun() {
       return this.activeFile && this.activeFile.content.trim().length > 0;
-    }
+    },
   },
   methods: {
     setActiveFile(fileId) {
       this.activeFileId = fileId;
     },
     addNewFile() {
-      const fileName = prompt('Enter file name (e.g., script.js, style.css):');
+      const fileName = prompt("Enter file name (e.g., script.js, style.css):");
       if (!fileName) return;
 
-      const extension = fileName.split('.').pop().toLowerCase();
-      let type = 'javascript';
-      if (extension === 'html' || extension === 'htm') type = 'html';
-      else if (extension === 'css') type = 'css';
+      const extension = fileName.split(".").pop().toLowerCase();
+      let type = "javascript";
+      if (extension === "html" || extension === "htm") type = "html";
+      else if (extension === "css") type = "css";
 
       const newFile = {
         id: this.nextFileId++,
         name: fileName,
         type: type,
-        content: this.getDefaultContent(type)
+        content: this.getDefaultContent(type),
       };
 
       this.files.push(newFile);
@@ -213,7 +187,7 @@ export default {
     removeFile(fileId) {
       if (this.files.length <= 1) return;
 
-      const index = this.files.findIndex(file => file.id === fileId);
+      const index = this.files.findIndex((file) => file.id === fileId);
       if (index !== -1) {
         this.files.splice(index, 1);
         if (this.activeFileId === fileId) {
@@ -223,14 +197,14 @@ export default {
     },
     updateFileType() {
       const file = this.activeFile;
-      const extensions = { html: 'html', css: 'css', javascript: 'js' };
+      const extensions = { html: "html", css: "css", javascript: "js" };
       const newExt = extensions[file.type];
-      const nameParts = file.name.split('.');
+      const nameParts = file.name.split(".");
       if (nameParts.length > 1) {
         nameParts[nameParts.length - 1] = newExt;
-        file.name = nameParts.join('.');
+        file.name = nameParts.join(".");
       } else {
-        file.name += '.' + newExt;
+        file.name += "." + newExt;
       }
     },
     getDefaultContent(type) {
@@ -264,34 +238,34 @@ function greet(name) {
     return \`Hello, \${name}!\`;
 }
 
-console.log(greet('World'));`
+console.log(greet('World'));`,
       };
-      return templates[type] || '';
+      return templates[type] || "";
     },
     getFileIcon(type) {
       const icons = {
-        html: '🌐',
-        css: '🎨',
-        javascript: '⚡'
+        html: "🌐",
+        css: "🎨",
+        javascript: "⚡",
       };
-      return icons[type] || '📄';
+      return icons[type] || "📄";
     },
     getPlaceholder() {
       const placeholders = {
-        html: 'Write your HTML code here...',
-        css: 'Write your CSS styles here...',
-        javascript: 'Write your JavaScript code here...'
+        html: "Write your HTML code here...",
+        css: "Write your CSS styles here...",
+        javascript: "Write your JavaScript code here...",
       };
-      return placeholders[this.activeFile.type] || 'Start coding...';
+      return placeholders[this.activeFile.type] || "Start coding...";
     },
     getLineCount() {
-      return this.activeFile.content.split('\n').length;
+      return this.activeFile.content.split("\n").length;
     },
     updateContent() {
       // Auto-save functionality could be added here
     },
     handleKeydown(event) {
-      if (event.key === 'Tab') {
+      if (event.key === "Tab") {
         event.preventDefault();
         const textarea = event.target;
         const start = textarea.selectionStart;
@@ -299,7 +273,7 @@ console.log(greet('World'));`
 
         this.activeFile.content =
           this.activeFile.content.substring(0, start) +
-          '    ' +
+          "    " +
           this.activeFile.content.substring(end);
 
         this.$nextTick(() => {
@@ -319,11 +293,11 @@ console.log(greet('World'));`
       const content = this.activeFile.content;
       const type = this.activeFile.type;
 
-      if (type === 'html') {
+      if (type === "html") {
         return this.highlightHTML(content);
-      } else if (type === 'css') {
+      } else if (type === "css") {
         return this.highlightCSS(content);
-      } else if (type === 'javascript') {
+      } else if (type === "javascript") {
         return this.highlightJavaScript(content);
       }
 
@@ -331,37 +305,63 @@ console.log(greet('World'));`
     },
     highlightHTML(code) {
       return code
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/(&lt;\/?)([\w-]+)(.*?)(&gt;)/g, '$1<span class="html-tag">$2</span>$3$4')
-        .replace(/([\w-]+)(=)("[^"]*")/g, '<span class="html-attr">$1</span>$2<span class="html-value">$3</span>')
-        .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="html-comment">$1</span>');
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(
+          /(&lt;\/?)([\w-]+)(.*?)(&gt;)/g,
+          '$1<span class="html-tag">$2</span>$3$4'
+        )
+        .replace(
+          /([\w-]+)(=)("[^"]*")/g,
+          '<span class="html-attr">$1</span>$2<span class="html-value">$3</span>'
+        )
+        .replace(
+          /(&lt;!--[\s\S]*?--&gt;)/g,
+          '<span class="html-comment">$1</span>'
+        );
     },
     highlightCSS(code) {
       return code
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
         .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="css-comment">$1</span>')
-        .replace(/([.#]?[\w-]+)(\s*{)/g, '<span class="css-selector">$1</span>$2')
+        .replace(
+          /([.#]?[\w-]+)(\s*{)/g,
+          '<span class="css-selector">$1</span>$2'
+        )
         .replace(/([\w-]+)(\s*:)/g, '<span class="css-property">$1</span>$2')
         .replace(/(:)([\s\S]*?)(;)/g, '$1<span class="css-value">$2</span>$3');
     },
     highlightJavaScript(code) {
-      const keywords = ['function', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'return', 'true', 'false', 'null', 'undefined'];
+      const keywords = [
+        "function",
+        "var",
+        "let",
+        "const",
+        "if",
+        "else",
+        "for",
+        "while",
+        "return",
+        "true",
+        "false",
+        "null",
+        "undefined",
+      ];
 
       let highlighted = code
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
         .replace(/(\/\/.*$)/gm, '<span class="js-comment">$1</span>')
         .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="js-comment">$1</span>')
         .replace(/('.*?'|".*?")/g, '<span class="js-string">$1</span>');
 
-      keywords.forEach(keyword => {
+      keywords.forEach((keyword) => {
         highlighted = highlighted.replace(
-          new RegExp(`\\b(${keyword})\\b`, 'g'),
+          new RegExp(`\\b(${keyword})\\b`, "g"),
           '<span class="js-keyword">$1</span>'
         );
       });
@@ -369,11 +369,11 @@ console.log(greet('World'));`
       return highlighted;
     },
     runCode() {
-      if (this.activeFile.type === 'html') {
+      if (this.activeFile.type === "html") {
         this.runHTMLCode();
-      } else if (this.activeFile.type === 'javascript') {
+      } else if (this.activeFile.type === "javascript") {
         this.runJavaScriptCode();
-      } else if (this.activeFile.type === 'css') {
+      } else if (this.activeFile.type === "css") {
         this.showCSSPreview();
       }
     },
@@ -396,24 +396,24 @@ console.log(greet('World'));`
       const originalWarn = console.warn;
 
       console.log = (...args) => {
-        this.addConsoleMessage('log', args.join(' '));
+        this.addConsoleMessage("log", args.join(" "));
         originalLog.apply(console, args);
       };
 
       console.error = (...args) => {
-        this.addConsoleMessage('error', args.join(' '));
+        this.addConsoleMessage("error", args.join(" "));
         originalError.apply(console, args);
       };
 
       console.warn = (...args) => {
-        this.addConsoleMessage('warn', args.join(' '));
+        this.addConsoleMessage("warn", args.join(" "));
         originalWarn.apply(console, args);
       };
 
       try {
         eval(this.activeFile.content);
       } catch (error) {
-        this.addConsoleMessage('error', error.message);
+        this.addConsoleMessage("error", error.message);
       }
 
       console.log = originalLog;
@@ -448,7 +448,7 @@ console.log(greet('World'));`
       this.consoleMessages.push({
         type,
         content,
-        time: new Date().toLocaleTimeString()
+        time: new Date().toLocaleTimeString(),
       });
     },
     toggleConsole() {
@@ -462,13 +462,13 @@ console.log(greet('World'));`
         if (iframe) {
           const doc = iframe.contentDocument || iframe.contentWindow.document;
           doc.open();
-          doc.write('<html><body><p>Output cleared</p></body></html>');
+          doc.write("<html><body><p>Output cleared</p></body></html>");
           doc.close();
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -476,7 +476,7 @@ console.log(greet('World'));`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   background: #1e1e1e;
   color: #ffffff;
 }
@@ -508,7 +508,8 @@ console.log(greet('World'));`
   gap: 10px;
 }
 
-.run-button, .clear-button {
+.run-button,
+.clear-button {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -521,7 +522,7 @@ console.log(greet('World'));`
 }
 
 .run-button {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
 }
 
@@ -684,7 +685,7 @@ console.log(greet('World'));`
   outline: none;
   background: transparent;
   color: #ffffff;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 14px;
   line-height: 1.5;
   padding: 15px 15px 15px 65px;
@@ -700,7 +701,7 @@ console.log(greet('World'));`
   width: 100%;
   height: 100%;
   padding: 15px 15px 15px 65px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 14px;
   line-height: 1.5;
   pointer-events: none;
@@ -790,7 +791,7 @@ console.log(greet('World'));`
   gap: 10px;
   padding: 5px 0;
   border-bottom: 1px solid #3c3c3c;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.9rem;
 }
 
