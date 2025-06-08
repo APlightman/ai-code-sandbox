@@ -6,9 +6,13 @@
         Code Sandbox
       </h1>
       <div class="sandbox-controls">
-        <button @click="runCode" class="run-button" :disabled="!canRun">
-          <span class="button-icon">▶</span>
-          Run Code
+        <button
+          @click="runCode"
+          class="run-button"
+          :disabled="!canRun || isExecuting"
+        >
+          <span class="button-icon">{{ isExecuting ? "⏳" : "▶" }}</span>
+          {{ isExecuting ? "Running..." : "Run Code" }}
         </button>
         <button @click="clearOutput" class="clear-button">
           <span class="button-icon">🗑</span>
