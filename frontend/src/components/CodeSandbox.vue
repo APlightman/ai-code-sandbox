@@ -20,19 +20,20 @@
     <div class="sandbox-content">
       <div class="editor-panel">
         <div class="file-tabs">
-          <button 
-            v-for="file in files" 
+          <button
+            v-for="file in files"
             :key="file.id"
             @click="setActiveFile(file.id)"
             :class="['file-tab', { active: activeFileId === file.id }]"
           >
             <span class="file-icon">{{ getFileIcon(file.type) }}</span>
             {{ file.name }}
-            <span 
-              v-if="files.length > 1" 
-              @click.stop="removeFile(file.id)" 
+            <span
+              v-if="files.length > 1"
+              @click.stop="removeFile(file.id)"
               class="close-tab"
-            >×</span>
+              >×</span
+            >
           </button>
           <button @click="addNewFile" class="add-file-button">
             <span class="button-icon">+</span>
@@ -41,24 +42,32 @@
 
         <div class="editor-container">
           <div class="editor-toolbar">
-            <select v-model="activeFile.type" @change="updateFileType" class="language-selector">
+            <select
+              v-model="activeFile.type"
+              @change="updateFileType"
+              class="language-selector"
+            >
               <option value="html">HTML</option>
               <option value="css">CSS</option>
               <option value="javascript">JavaScript</option>
             </select>
             <div class="editor-info">
               <span class="line-count">Lines: {{ getLineCount() }}</span>
-              <span class="char-count">Characters: {{ activeFile.content.length }}</span>
+              <span class="char-count"
+                >Characters: {{ activeFile.content.length }}</span
+              >
             </div>
           </div>
-          
+
           <div class="code-editor-wrapper">
             <div class="line-numbers">
-              <div 
-                v-for="line in getLineCount()" 
-                :key="line" 
+              <div
+                v-for="line in getLineCount()"
+                :key="line"
                 class="line-number"
-              >{{ line }}</div>
+              >
+                {{ line }}
+              </div>
             </div>
             <textarea
               v-model="activeFile.content"
@@ -77,29 +86,34 @@
         <div class="output-header">
           <h3>Output</h3>
           <div class="output-controls">
-            <button @click="toggleConsole" :class="['console-toggle', { active: showConsole }]">
+            <button
+              @click="toggleConsole"
+              :class="['console-toggle', { active: showConsole }]"
+            >
               Console
             </button>
           </div>
         </div>
-        
+
         <div class="output-content">
-          <iframe 
+          <iframe
             v-if="!showConsole"
-            ref="outputFrame" 
+            ref="outputFrame"
             class="output-frame"
             sandbox="allow-scripts allow-modals"
           ></iframe>
-          
+
           <div v-else class="console-output">
             <div class="console-header">JavaScript Console</div>
             <div class="console-messages">
-              <div 
-                v-for="(message, index) in consoleMessages" 
+              <div
+                v-for="(message, index) in consoleMessages"
                 :key="index"
                 :class="['console-message', message.type]"
               >
-                <span class="message-type">[{{ message.type.toUpperCase() }}]</span>
+                <span class="message-type"
+                  >[{{ message.type.toUpperCase() }}]</span
+                >
                 <span class="message-content">{{ message.content }}</span>
                 <span class="message-time">{{ message.time }}</span>
               </div>
@@ -113,97 +127,100 @@
 
 <script>
 export default {
-  name: 'CodeSandbox',
+  name: "CodeSandbox",
   data() {
     return {
       files: [
         {
           id: 1,
-          name: 'index.html',
-          type: 'html',
-          content: this.getWelcomeHTML()
-        }
+          name: "index.html",
+          type: "html",
+          content: this.getWelcomeHTML(),
+        },
       ],
       activeFileId: 1,
       nextFileId: 2,
       showConsole: false,
-      consoleMessages: []
-    }
+      consoleMessages: [],
+    };
   },
   computed: {
     activeFile() {
-      return this.files.find(file => file.id === this.activeFileId) || this.files[0];
+      return (
+        this.files.find((file) => file.id === this.activeFileId) ||
+        this.files[0]
+      );
     },
     canRun() {
       return this.activeFile && this.activeFile.content.trim().length > 0;
-    }
+    },
   },
   methods: {
     getWelcomeHTML() {
       return [
-        '<!DOCTYPE html>',
+        "<!DOCTYPE html>",
         '<html lang="en">',
-        '<head>',
+        "<head>",
         '    <meta charset="UTF-8">',
         '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
-        '    <title>Code Sandbox</title>',
-        '    <style>',
-        '        body {',
-        '            font-family: Arial, sans-serif;',
-        '            margin: 20px;',
-        '            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);',
-        '            color: white;',
-        '        }',
-        '        .container {',
-        '            max-width: 800px;',
-        '            margin: 0 auto;',
-        '            text-align: center;',
-        '        }',
-        '        .welcome-box {',
-        '            background: rgba(255, 255, 255, 0.1);',
-        '            padding: 30px;',
-        '            border-radius: 15px;',
-        '            backdrop-filter: blur(10px);',
-        '            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);',
-        '        }',
-        '    </style>',
-        '</head>',
-        '<body>',
+        "    <title>Code Sandbox</title>",
+        "    <style>",
+        "        body {",
+        "            font-family: Arial, sans-serif;",
+        "            margin: 20px;",
+        "            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);",
+        "            color: white;",
+        "        }",
+        "        .container {",
+        "            max-width: 800px;",
+        "            margin: 0 auto;",
+        "            text-align: center;",
+        "        }",
+        "        .welcome-box {",
+        "            background: rgba(255, 255, 255, 0.1);",
+        "            padding: 30px;",
+        "            border-radius: 15px;",
+        "            backdrop-filter: blur(10px);",
+        "            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);",
+        "        }",
+        "    </style>",
+        "</head>",
+        "<body>",
         '    <div class="container">',
         '        <div class="welcome-box">',
-        '            <h1>🚀 Welcome to Code Sandbox!</h1>',
-        '            <p>Start coding and see your results instantly!</p>',
+        "            <h1>🚀 Welcome to Code Sandbox!</h1>",
+        "            <p>Start coding and see your results instantly!</p>",
         '            <button onclick="showMessage()">Click me!</button>',
-        '        </div>',
-        '    </div>',
-        '',
-        '    <script>',
-        '        function showMessage() {',
-        '            alert(\'Hello from Code Sandbox! 🎉\');',
-        '            console.log(\'Button was clicked!\');',
-        '        }',
-        '    </script>',
-        '</body>',
-        '</html>'
-      ].join('\n');
+        "        </div>",
+        "    </div>",
+        "",
+        "    <script>",
+        "        function showMessage() {",
+        "            alert('Hello from Code Sandbox! 🎉');",
+        "            console.log('Button was clicked!');",
+        "        }",
+        "    <" + "/script>",
+        "</body>",
+        "</html>",
+      ].join("\n");
     },
     setActiveFile(fileId) {
       this.activeFileId = fileId;
     },
     addNewFile() {
-      const fileName = prompt('Enter file name (e.g., script.js, style.css):');
+      const fileName = prompt("Enter file name (e.g., script.js, style.css):");
       if (!fileName) return;
 
-      const extension = fileName.split('.').pop().toLowerCase();
-      let type = 'javascript';
-      if (extension === 'html' || extension === 'htm') type = 'html';
-      else if (extension === 'css') type = 'css';
+      const extension = fileName.split(".").pop().toLowerCase();
+      let type = "javascript";
+      if (extension === "html" || extension === "htm") type = "html";
+      else if (extension === "css") type = "css";
 
       const newFile = {
         id: this.nextFileId++,
         name: fileName,
         type: type,
-        content: this.getDefaultContent(type)
+        content: this.getDefaultContent(type),
       };
 
       this.files.push(newFile);
@@ -211,8 +228,8 @@ export default {
     },
     removeFile(fileId) {
       if (this.files.length <= 1) return;
-      
-      const index = this.files.findIndex(file => file.id === fileId);
+
+      const index = this.files.findIndex((file) => file.id === fileId);
       if (index !== -1) {
         this.files.splice(index, 1);
         if (this.activeFileId === fileId) {
@@ -222,102 +239,102 @@ export default {
     },
     updateFileType() {
       const file = this.activeFile;
-      const extensions = { html: 'html', css: 'css', javascript: 'js' };
+      const extensions = { html: "html", css: "css", javascript: "js" };
       const newExt = extensions[file.type];
-      const nameParts = file.name.split('.');
+      const nameParts = file.name.split(".");
       if (nameParts.length > 1) {
         nameParts[nameParts.length - 1] = newExt;
-        file.name = nameParts.join('.');
+        file.name = nameParts.join(".");
       } else {
-        file.name += '.' + newExt;
+        file.name += "." + newExt;
       }
     },
     getDefaultContent(type) {
       const templates = {
         html: [
-          '<!DOCTYPE html>',
+          "<!DOCTYPE html>",
           '<html lang="en">',
-          '<head>',
+          "<head>",
           '    <meta charset="UTF-8">',
           '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
-          '    <title>New Document</title>',
-          '</head>',
-          '<body>',
-          '    <h1>Hello World!</h1>',
-          '</body>',
-          '</html>'
-        ].join('\n'),
+          "    <title>New Document</title>",
+          "</head>",
+          "<body>",
+          "    <h1>Hello World!</h1>",
+          "</body>",
+          "</html>",
+        ].join("\n"),
         css: [
-          '/* CSS Styles */',
-          'body {',
-          '    font-family: Arial, sans-serif;',
-          '    margin: 0;',
-          '    padding: 20px;',
-          '}',
-          '',
-          '.container {',
-          '    max-width: 800px;',
-          '    margin: 0 auto;',
-          '}'
-        ].join('\n'),
+          "/* CSS Styles */",
+          "body {",
+          "    font-family: Arial, sans-serif;",
+          "    margin: 0;",
+          "    padding: 20px;",
+          "}",
+          "",
+          ".container {",
+          "    max-width: 800px;",
+          "    margin: 0 auto;",
+          "}",
+        ].join("\n"),
         javascript: [
-          '// JavaScript Code',
-          'console.log(\'Hello from JavaScript!\');',
-          '',
-          'function greet(name) {',
-          '    return `Hello, ${name}!`;',
-          '}',
-          '',
-          'console.log(greet(\'World\'));'
-        ].join('\n')
+          "// JavaScript Code",
+          "console.log('Hello from JavaScript!');",
+          "",
+          "function greet(name) {",
+          "    return `Hello, ${name}!`;",
+          "}",
+          "",
+          "console.log(greet('World'));",
+        ].join("\n"),
       };
-      return templates[type] || '';
+      return templates[type] || "";
     },
     getFileIcon(type) {
       const icons = {
-        html: '🌐',
-        css: '🎨',
-        javascript: '⚡'
+        html: "🌐",
+        css: "🎨",
+        javascript: "⚡",
       };
-      return icons[type] || '📄';
+      return icons[type] || "📄";
     },
     getPlaceholder() {
       const placeholders = {
-        html: 'Write your HTML code here...',
-        css: 'Write your CSS styles here...',
-        javascript: 'Write your JavaScript code here...'
+        html: "Write your HTML code here...",
+        css: "Write your CSS styles here...",
+        javascript: "Write your JavaScript code here...",
       };
-      return placeholders[this.activeFile.type] || 'Start coding...';
+      return placeholders[this.activeFile.type] || "Start coding...";
     },
     getLineCount() {
-      return this.activeFile.content.split('\n').length;
+      return this.activeFile.content.split("\n").length;
     },
     updateContent() {
       // Auto-save functionality could be added here
     },
     handleKeydown(event) {
-      if (event.key === 'Tab') {
+      if (event.key === "Tab") {
         event.preventDefault();
         const textarea = event.target;
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
-        
-        this.activeFile.content = 
-          this.activeFile.content.substring(0, start) + 
-          '    ' + 
+
+        this.activeFile.content =
+          this.activeFile.content.substring(0, start) +
+          "    " +
           this.activeFile.content.substring(end);
-        
+
         this.$nextTick(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 4;
         });
       }
     },
     runCode() {
-      if (this.activeFile.type === 'html') {
+      if (this.activeFile.type === "html") {
         this.runHTMLCode();
-      } else if (this.activeFile.type === 'javascript') {
+      } else if (this.activeFile.type === "javascript") {
         this.runJavaScriptCode();
-      } else if (this.activeFile.type === 'css') {
+      } else if (this.activeFile.type === "css") {
         this.showCSSPreview();
       }
     },
@@ -334,33 +351,33 @@ export default {
     runJavaScriptCode() {
       this.consoleMessages = [];
       this.showConsole = true;
-      
+
       const originalLog = console.log;
       const originalError = console.error;
       const originalWarn = console.warn;
-      
+
       console.log = (...args) => {
-        this.addConsoleMessage('log', args.join(' '));
+        this.addConsoleMessage("log", args.join(" "));
         originalLog.apply(console, args);
       };
-      
+
       console.error = (...args) => {
-        this.addConsoleMessage('error', args.join(' '));
+        this.addConsoleMessage("error", args.join(" "));
         originalError.apply(console, args);
       };
-      
+
       console.warn = (...args) => {
-        this.addConsoleMessage('warn', args.join(' '));
+        this.addConsoleMessage("warn", args.join(" "));
         originalWarn.apply(console, args);
       };
-      
+
       try {
         // eslint-disable-next-line no-eval
         eval(this.activeFile.content);
       } catch (error) {
-        this.addConsoleMessage('error', error.message);
+        this.addConsoleMessage("error", error.message);
       }
-      
+
       console.log = originalLog;
       console.error = originalError;
       console.warn = originalWarn;
@@ -368,20 +385,20 @@ export default {
     showCSSPreview() {
       const cssContent = this.activeFile.content;
       const htmlContent = [
-        '<!DOCTYPE html>',
-        '<html>',
-        '<head>',
-        '    <style>' + cssContent + '</style>',
-        '</head>',
-        '<body>',
-        '    <h1>CSS Preview</h1>',
-        '    <p>This is a preview of your CSS styles.</p>',
+        "<!DOCTYPE html>",
+        "<html>",
+        "<head>",
+        "    <style>" + cssContent + "</style>",
+        "</head>",
+        "<body>",
+        "    <h1>CSS Preview</h1>",
+        "    <p>This is a preview of your CSS styles.</p>",
         '    <div class="example">Example content</div>',
-        '    <button>Button</button>',
-        '</body>',
-        '</html>'
-      ].join('\n');
-      
+        "    <button>Button</button>",
+        "</body>",
+        "</html>",
+      ].join("\n");
+
       const iframe = this.$refs.outputFrame;
       if (iframe) {
         const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -395,7 +412,7 @@ export default {
       this.consoleMessages.push({
         type,
         content,
-        time: new Date().toLocaleTimeString()
+        time: new Date().toLocaleTimeString(),
       });
     },
     toggleConsole() {
@@ -409,13 +426,13 @@ export default {
         if (iframe) {
           const doc = iframe.contentDocument || iframe.contentWindow.document;
           doc.open();
-          doc.write('<html><body><p>Output cleared</p></body></html>');
+          doc.write("<html><body><p>Output cleared</p></body></html>");
           doc.close();
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -423,7 +440,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   background: #1e1e1e;
   color: #ffffff;
 }
@@ -455,7 +472,8 @@ export default {
   gap: 10px;
 }
 
-.run-button, .clear-button {
+.run-button,
+.clear-button {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -468,7 +486,7 @@ export default {
 }
 
 .run-button {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
 }
 
@@ -631,7 +649,7 @@ export default {
   outline: none;
   background: transparent;
   color: #ffffff;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 14px;
   line-height: 1.5;
   padding: 15px 15px 15px 65px;
@@ -720,7 +738,7 @@ export default {
   gap: 10px;
   padding: 5px 0;
   border-bottom: 1px solid #3c3c3c;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.9rem;
 }
 
@@ -757,23 +775,23 @@ export default {
   .sandbox-content {
     flex-direction: column;
   }
-  
+
   .editor-panel {
     height: 60vh;
     border-right: none;
     border-bottom: 1px solid #3c3c3c;
   }
-  
+
   .output-panel {
     height: 40vh;
   }
-  
+
   .sandbox-header {
     flex-direction: column;
     gap: 10px;
     align-items: stretch;
   }
-  
+
   .sandbox-controls {
     justify-content: center;
   }
