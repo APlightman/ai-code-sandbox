@@ -173,6 +173,62 @@ export default {
     });
   },
   methods: {
+    initializeOutput() {
+      if (!this.showConsole) {
+        const iframe = this.$refs.outputFrame;
+        if (iframe) {
+          const welcomeContent = [
+            "<!DOCTYPE html>",
+            "<html>",
+            "<head>",
+            '    <meta charset="UTF-8">',
+            "    <title>Code Sandbox - Ready</title>",
+            "    <style>",
+            "        body {",
+            "            font-family: Arial, sans-serif;",
+            "            text-align: center;",
+            "            padding: 40px 20px;",
+            "            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);",
+            "            color: white;",
+            "            margin: 0;",
+            "            min-height: 100vh;",
+            "            display: flex;",
+            "            align-items: center;",
+            "            justify-content: center;",
+            "        }",
+            "        .welcome {",
+            "            background: rgba(255, 255, 255, 0.1);",
+            "            padding: 40px;",
+            "            border-radius: 15px;",
+            "            backdrop-filter: blur(10px);",
+            "            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);",
+            "            max-width: 500px;",
+            "        }",
+            "        h1 { margin-bottom: 20px; }",
+            "        p { margin: 10px 0; opacity: 0.9; }",
+            "        .instructions { margin-top: 30px; font-size: 0.9em; }",
+            "    </style>",
+            "</head>",
+            "<body>",
+            '    <div class="welcome">',
+            "        <h1>🚀 Code Sandbox Ready!</h1>",
+            "        <p>Write your HTML, CSS, or JavaScript code in the editor.</p>",
+            '        <p>Click the <strong>"Run Code"</strong> button to see your results here.</p>',
+            '        <div class="instructions">',
+            "            <p>💡 <strong>Tips:</strong></p>",
+            "            <p>• Use the + button to add new files</p>",
+            "            <p>• Switch between HTML, CSS, and JavaScript</p>",
+            "            <p>• Check the Console for JavaScript output</p>",
+            "        </div>",
+            "    </div>",
+            "</body>",
+            "</html>",
+          ].join("\n");
+
+          this.loadHTMLContent(iframe, welcomeContent);
+        }
+      }
+    },
     getWelcomeHTML() {
       return [
         "<!DOCTYPE html>",
