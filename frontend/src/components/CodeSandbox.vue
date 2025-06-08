@@ -539,16 +539,40 @@ export default {
       this.showConsole = !this.showConsole;
     },
     clearOutput() {
-      if (this.showConsole) {
-        this.consoleMessages = [];
-      } else {
-        const iframe = this.$refs.outputFrame;
-        if (iframe) {
-          const doc = iframe.contentDocument || iframe.contentWindow.document;
-          doc.open();
-          doc.write("<html><body><p>Output cleared</p></body></html>");
-          doc.close();
+      try {
+        if (this.showConsole) {
+          this.consoleMessages = [];
+          this.addConsoleMessage("info", "Console cleared");
+        } else {
+          this.$nextTick(() => {
+            try {
+              const iframe = this.$refs.outputFrame;
+              if (iframe) {
+                const doc =
+                  iframe.contentDocument || iframe.contentWindow?.document;
+                if (doc) {
+                  doc.open();
+                  doc.write(
+                    [
+                      "<html>",
+                      "<head><title>Output Cleared</title></head>",
+                      '<body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; color: #666;">',
+                      "<h2>Output Cleared</h2>",
+                      "<p>Run your code to see the output here.</p>",
+                      "</body>",
+                      "</html>",
+                    ].join("\n")
+                  );
+                  doc.close();
+                }
+              }
+            } catch (error) {
+              console.error("Error clearing output:", error);
+            }
+          });
         }
+      } catch (error) {
+        console.error("Error in clearOutput:", error);
       }
     },
   },
