@@ -157,7 +157,11 @@ export default {
       );
     },
     canRun() {
-      return this.activeFile && this.activeFile.content.trim().length > 0;
+      return (
+        this.activeFile &&
+        this.activeFile.content.trim().length > 0 &&
+        !this.isExecuting
+      );
     },
   },
   methods: {
