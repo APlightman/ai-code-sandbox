@@ -20,17 +20,17 @@
     <div class="sandbox-content">
       <div class="editor-panel">
         <div class="file-tabs">
-          <button
-            v-for="file in files"
+          <button 
+            v-for="file in files" 
             :key="file.id"
             @click="setActiveFile(file.id)"
             :class="['file-tab', { active: activeFileId === file.id }]"
           >
             <span class="file-icon">{{ getFileIcon(file.type) }}</span>
             {{ file.name }}
-            <span
-              v-if="files.length > 1"
-              @click.stop="removeFile(file.id)"
+            <span 
+              v-if="files.length > 1" 
+              @click.stop="removeFile(file.id)" 
               class="close-tab"
             >×</span>
           </button>
@@ -51,12 +51,12 @@
               <span class="char-count">Characters: {{ activeFile.content.length }}</span>
             </div>
           </div>
-
+          
           <div class="code-editor-wrapper">
             <div class="line-numbers">
-              <div
-                v-for="line in getLineCount()"
-                :key="line"
+              <div 
+                v-for="line in getLineCount()" 
+                :key="line" 
                 class="line-number"
               >{{ line }}</div>
             </div>
@@ -64,17 +64,11 @@
               v-model="activeFile.content"
               @input="updateContent"
               @keydown="handleKeydown"
-              @scroll="syncScroll"
               ref="codeEditor"
               class="code-editor"
               :placeholder="getPlaceholder()"
               spellcheck="false"
             ></textarea>
-            <div
-              ref="syntaxHighlight"
-              class="syntax-highlight"
-              v-html="getHighlightedCode()"
-            ></div>
           </div>
         </div>
       </div>
@@ -88,20 +82,20 @@
             </button>
           </div>
         </div>
-
+        
         <div class="output-content">
-          <iframe
+          <iframe 
             v-if="!showConsole"
-            ref="outputFrame"
+            ref="outputFrame" 
             class="output-frame"
             sandbox="allow-scripts allow-modals"
           ></iframe>
-
+          
           <div v-else class="console-output">
             <div class="console-header">JavaScript Console</div>
             <div class="console-messages">
-              <div
-                v-for="(message, index) in consoleMessages"
+              <div 
+                v-for="(message, index) in consoleMessages" 
                 :key="index"
                 :class="['console-message', message.type]"
               >
@@ -146,7 +140,52 @@ export default {
   },
   methods: {
     getWelcomeHTML() {
-      return '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Code Sandbox</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            margin: 20px;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            color: white;\n        }\n        .container {\n            max-width: 800px;\n            margin: 0 auto;\n            text-align: center;\n        }\n        .welcome-box {\n            background: rgba(255, 255, 255, 0.1);\n            padding: 30px;\n            border-radius: 15px;\n            backdrop-filter: blur(10px);\n            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);\n        }\n    </style>\n</head>\n<body>\n    <div class="container">\n        <div class="welcome-box">\n            <h1>🚀 Welcome to Code Sandbox!</h1>\n            <p>Start coding and see your results instantly!</p>\n            <button onclick="showMessage()">Click me!</button>\n        </div>\n    </div>\n\n    <script>\n        function showMessage() {\n            alert(\'Hello from Code Sandbox! 🎉\');\n            console.log(\'Button was clicked!\');\n        }\n    </script>\n</body>\n</html>';
+      return [
+        '<!DOCTYPE html>',
+        '<html lang="en">',
+        '<head>',
+        '    <meta charset="UTF-8">',
+        '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
+        '    <title>Code Sandbox</title>',
+        '    <style>',
+        '        body {',
+        '            font-family: Arial, sans-serif;',
+        '            margin: 20px;',
+        '            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);',
+        '            color: white;',
+        '        }',
+        '        .container {',
+        '            max-width: 800px;',
+        '            margin: 0 auto;',
+        '            text-align: center;',
+        '        }',
+        '        .welcome-box {',
+        '            background: rgba(255, 255, 255, 0.1);',
+        '            padding: 30px;',
+        '            border-radius: 15px;',
+        '            backdrop-filter: blur(10px);',
+        '            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);',
+        '        }',
+        '    </style>',
+        '</head>',
+        '<body>',
+        '    <div class="container">',
+        '        <div class="welcome-box">',
+        '            <h1>🚀 Welcome to Code Sandbox!</h1>',
+        '            <p>Start coding and see your results instantly!</p>',
+        '            <button onclick="showMessage()">Click me!</button>',
+        '        </div>',
+        '    </div>',
+        '',
+        '    <script>',
+        '        function showMessage() {',
+        '            alert(\'Hello from Code Sandbox! 🎉\');',
+        '            console.log(\'Button was clicked!\');',
+        '        }',
+        '    </script>',
+        '</body>',
+        '</html>'
+      ].join('\n');
     },
     setActiveFile(fileId) {
       this.activeFileId = fileId;
@@ -172,7 +211,7 @@ export default {
     },
     removeFile(fileId) {
       if (this.files.length <= 1) return;
-
+      
       const index = this.files.findIndex(file => file.id === fileId);
       if (index !== -1) {
         this.files.splice(index, 1);
@@ -195,36 +234,42 @@ export default {
     },
     getDefaultContent(type) {
       const templates = {
-        html: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Document</title>
-</head>
-<body>
-    <h1>Hello World!</h1>
-</body>
-</html>`,
-        css: `/* CSS Styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-}`,
-        javascript: `// JavaScript Code
-console.log('Hello from JavaScript!');
-
-function greet(name) {
-    return \`Hello, \${name}!\`;
-}
-
-console.log(greet('World'));`
+        html: [
+          '<!DOCTYPE html>',
+          '<html lang="en">',
+          '<head>',
+          '    <meta charset="UTF-8">',
+          '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
+          '    <title>New Document</title>',
+          '</head>',
+          '<body>',
+          '    <h1>Hello World!</h1>',
+          '</body>',
+          '</html>'
+        ].join('\n'),
+        css: [
+          '/* CSS Styles */',
+          'body {',
+          '    font-family: Arial, sans-serif;',
+          '    margin: 0;',
+          '    padding: 20px;',
+          '}',
+          '',
+          '.container {',
+          '    max-width: 800px;',
+          '    margin: 0 auto;',
+          '}'
+        ].join('\n'),
+        javascript: [
+          '// JavaScript Code',
+          'console.log(\'Hello from JavaScript!\');',
+          '',
+          'function greet(name) {',
+          '    return `Hello, ${name}!`;',
+          '}',
+          '',
+          'console.log(greet(\'World\'));'
+        ].join('\n')
       };
       return templates[type] || '';
     },
@@ -256,97 +301,16 @@ console.log(greet('World'));`
         const textarea = event.target;
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
-
-        this.activeFile.content =
-          this.activeFile.content.substring(0, start) +
-          '    ' +
+        
+        this.activeFile.content = 
+          this.activeFile.content.substring(0, start) + 
+          '    ' + 
           this.activeFile.content.substring(end);
-
+        
         this.$nextTick(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 4;
         });
       }
-    },
-    syncScroll() {
-      const editor = this.$refs.codeEditor;
-      const highlight = this.$refs.syntaxHighlight;
-      if (highlight) {
-        highlight.scrollTop = editor.scrollTop;
-        highlight.scrollLeft = editor.scrollLeft;
-      }
-    },
-    getHighlightedCode() {
-      const content = this.activeFile.content;
-      const type = this.activeFile.type;
-
-      if (type === 'html') {
-        return this.highlightHTML(content);
-      } else if (type === 'css') {
-        return this.highlightCSS(content);
-      } else if (type === 'javascript') {
-        return this.highlightJavaScript(content);
-      }
-
-      return content;
-    },
-    highlightHTML(code) {
-      const ampRegex = /&/g;
-      const ltRegex = /</g;
-      const gtRegex = />/g;
-      const tagRegex = /(&lt;\/?)([\w-]+)(.*?)(&gt;)/g;
-      const attrRegex = /([\w-]+)(=)("[^"]*")/g;
-      const commentRegex = /(&lt;!--[\s\S]*?--&gt;)/g;
-
-      return code
-        .replace(ampRegex, '&amp;')
-        .replace(ltRegex, '&lt;')
-        .replace(gtRegex, '&gt;')
-        .replace(tagRegex, '$1<span class="html-tag">$2</span>$3$4')
-        .replace(attrRegex, '<span class="html-attr">$1</span>$2<span class="html-value">$3</span>')
-        .replace(commentRegex, '<span class="html-comment">$1</span>');
-    },
-    highlightCSS(code) {
-      const ampRegex = /&/g;
-      const ltRegex = /</g;
-      const gtRegex = />/g;
-      const commentRegex = /(\/\*[\s\S]*?\*\/)/g;
-      const selectorRegex = /([.#]?[\w-]+)(\s*{)/g;
-      const propertyRegex = /([\w-]+)(\s*:)/g;
-      const valueRegex = /(:)([\s\S]*?)(;)/g;
-
-      return code
-        .replace(ampRegex, '&amp;')
-        .replace(ltRegex, '&lt;')
-        .replace(gtRegex, '&gt;')
-        .replace(commentRegex, '<span class="css-comment">$1</span>')
-        .replace(selectorRegex, '<span class="css-selector">$1</span>$2')
-        .replace(propertyRegex, '<span class="css-property">$1</span>$2')
-        .replace(valueRegex, '$1<span class="css-value">$2</span>$3');
-    },
-    highlightJavaScript(code) {
-      const keywords = ['function', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'return', 'true', 'false', 'null', 'undefined'];
-
-      const ampRegex = /&/g;
-      const ltRegex = /</g;
-      const gtRegex = />/g;
-      const commentLineRegex = /(\/\/.*$)/gm;
-      const commentBlockRegex = /(\/\*[\s\S]*?\*\/)/g;
-      const stringRegex = /('.*?'|".*?")/g;
-
-      let highlighted = code
-        .replace(ampRegex, '&amp;')
-        .replace(ltRegex, '&lt;')
-        .replace(gtRegex, '&gt;')
-        .replace(commentLineRegex, '<span class="js-comment">$1</span>')
-        .replace(commentBlockRegex, '<span class="js-comment">$1</span>')
-        .replace(stringRegex, '<span class="js-string">$1</span>');
-
-      keywords.forEach(keyword => {
-        const keywordRegex = new RegExp('\\b(' + keyword + ')\\b', 'g');
-        highlighted = highlighted.replace(keywordRegex, '<span class="js-keyword">$1</span>');
-      });
-
-      return highlighted;
     },
     runCode() {
       if (this.activeFile.type === 'html') {
@@ -370,51 +334,54 @@ console.log(greet('World'));`
     runJavaScriptCode() {
       this.consoleMessages = [];
       this.showConsole = true;
-
+      
       const originalLog = console.log;
       const originalError = console.error;
       const originalWarn = console.warn;
-
+      
       console.log = (...args) => {
         this.addConsoleMessage('log', args.join(' '));
         originalLog.apply(console, args);
       };
-
+      
       console.error = (...args) => {
         this.addConsoleMessage('error', args.join(' '));
         originalError.apply(console, args);
       };
-
+      
       console.warn = (...args) => {
         this.addConsoleMessage('warn', args.join(' '));
         originalWarn.apply(console, args);
       };
-
+      
       try {
+        // eslint-disable-next-line no-eval
         eval(this.activeFile.content);
       } catch (error) {
         this.addConsoleMessage('error', error.message);
       }
-
+      
       console.log = originalLog;
       console.error = originalError;
       console.warn = originalWarn;
     },
     showCSSPreview() {
       const cssContent = this.activeFile.content;
-      const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-    <style>${cssContent}</style>
-</head>
-<body>
-    <h1>CSS Preview</h1>
-    <p>This is a preview of your CSS styles.</p>
-    <div class="example">Example content</div>
-    <button>Button</button>
-</body>
-</html>`;
-
+      const htmlContent = [
+        '<!DOCTYPE html>',
+        '<html>',
+        '<head>',
+        '    <style>' + cssContent + '</style>',
+        '</head>',
+        '<body>',
+        '    <h1>CSS Preview</h1>',
+        '    <p>This is a preview of your CSS styles.</p>',
+        '    <div class="example">Example content</div>',
+        '    <button>Button</button>',
+        '</body>',
+        '</html>'
+      ].join('\n');
+      
       const iframe = this.$refs.outputFrame;
       if (iframe) {
         const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -673,23 +640,6 @@ console.log(greet('World'));`
   position: relative;
 }
 
-.syntax-highlight {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 15px 15px 15px 65px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  pointer-events: none;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  z-index: 1;
-  overflow: hidden;
-}
-
 .output-panel {
   flex: 1;
   display: flex;
@@ -802,73 +752,28 @@ console.log(greet('World'));`
   text-align: right;
 }
 
-/* Syntax highlighting styles */
-.html-tag {
-  color: #569cd6;
-}
-
-.html-attr {
-  color: #9cdcfe;
-}
-
-.html-value {
-  color: #ce9178;
-}
-
-.html-comment {
-  color: #6a9955;
-}
-
-.css-selector {
-  color: #d7ba7d;
-}
-
-.css-property {
-  color: #9cdcfe;
-}
-
-.css-value {
-  color: #ce9178;
-}
-
-.css-comment {
-  color: #6a9955;
-}
-
-.js-keyword {
-  color: #569cd6;
-}
-
-.js-string {
-  color: #ce9178;
-}
-
-.js-comment {
-  color: #6a9955;
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .sandbox-content {
     flex-direction: column;
   }
-
+  
   .editor-panel {
     height: 60vh;
     border-right: none;
     border-bottom: 1px solid #3c3c3c;
   }
-
+  
   .output-panel {
     height: 40vh;
   }
-
+  
   .sandbox-header {
     flex-direction: column;
     gap: 10px;
     align-items: stretch;
   }
-
+  
   .sandbox-controls {
     justify-content: center;
   }
