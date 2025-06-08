@@ -104,7 +104,7 @@
             v-if="!showConsole"
             ref="outputFrame"
             class="output-frame"
-            sandbox="allow-scripts allow-modals"
+            sandbox="allow-scripts allow-modals allow-same-origin allow-forms"
           ></iframe>
 
           <div v-else class="console-output">
