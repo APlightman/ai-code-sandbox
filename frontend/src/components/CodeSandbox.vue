@@ -142,6 +142,7 @@ export default {
       nextFileId: 2,
       showConsole: false,
       consoleMessages: [],
+      isExecuting: false,
     };
   },
   computed: {
