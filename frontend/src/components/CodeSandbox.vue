@@ -339,12 +339,27 @@ export default {
       }
     },
     runCode() {
-      if (this.activeFile.type === "html") {
-        this.runHTMLCode();
-      } else if (this.activeFile.type === "javascript") {
-        this.runJavaScriptCode();
-      } else if (this.activeFile.type === "css") {
-        this.showCSSPreview();
+      try {
+        if (!this.activeFile || !this.activeFile.content.trim()) {
+          this.addConsoleMessage("warn", "No code to run");
+          return;
+        }
+
+        if (this.activeFile.type === "html") {
+          this.runHTMLCode();
+        } else if (this.activeFile.type === "javascript") {
+          this.runJavaScriptCode();
+        } else if (this.activeFile.type === "css") {
+          this.showCSSPreview();
+        } else {
+          this.addConsoleMessage(
+            "error",
+            `Unsupported file type: ${this.activeFile.type}`
+          );
+        }
+      } catch (error) {
+        console.error("Error in runCode:", error);
+        this.addConsoleMessage("error", `Error running code: ${error.message}`);
       }
     },
     runHTMLCode() {
