@@ -609,23 +609,41 @@ export default {
             try {
               const iframe = this.$refs.outputFrame;
               if (iframe) {
-                const doc =
-                  iframe.contentDocument || iframe.contentWindow?.document;
-                if (doc) {
-                  doc.open();
-                  doc.write(
-                    [
-                      "<html>",
-                      "<head><title>Output Cleared</title></head>",
-                      '<body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; color: #666;">',
-                      "<h2>Output Cleared</h2>",
-                      "<p>Run your code to see the output here.</p>",
-                      "</body>",
-                      "</html>",
-                    ].join("\n")
-                  );
-                  doc.close();
-                }
+                const clearContent = [
+                  "<!DOCTYPE html>",
+                  "<html>",
+                  "<head>",
+                  '    <meta charset="UTF-8">',
+                  "    <title>Output Cleared</title>",
+                  "    <style>",
+                  "        body {",
+                  "            font-family: Arial, sans-serif;",
+                  "            text-align: center;",
+                  "            padding: 50px;",
+                  "            color: #666;",
+                  "            background: #f9f9f9;",
+                  "        }",
+                  "        .message {",
+                  "            background: white;",
+                  "            padding: 30px;",
+                  "            border-radius: 8px;",
+                  "            box-shadow: 0 2px 10px rgba(0,0,0,0.1);",
+                  "            max-width: 400px;",
+                  "            margin: 0 auto;",
+                  "        }",
+                  "    </style>",
+                  "</head>",
+                  "<body>",
+                  '    <div class="message">',
+                  "        <h2>✨ Output Cleared</h2>",
+                  "        <p>Run your code to see the output here.</p>",
+                  "    </div>",
+                  "</body>",
+                  "</html>",
+                ].join("\n");
+
+                // Use the robust loading method
+                this.loadHTMLContent(iframe, clearContent);
               }
             } catch (error) {
               console.error("Error clearing output:", error);
