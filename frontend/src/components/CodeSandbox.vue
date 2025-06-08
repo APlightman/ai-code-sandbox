@@ -516,11 +516,24 @@ export default {
       });
     },
     addConsoleMessage(type, content) {
-      this.consoleMessages.push({
-        type,
-        content,
-        time: new Date().toLocaleTimeString(),
-      });
+      try {
+        if (!this.consoleMessages) {
+          this.consoleMessages = [];
+        }
+
+        this.consoleMessages.push({
+          type: type || "log",
+          content: String(content || ""),
+          time: new Date().toLocaleTimeString(),
+        });
+
+        // Ensure console is visible for error messages
+        if (type === "error" || type === "warn") {
+          this.showConsole = true;
+        }
+      } catch (error) {
+        console.error("Error adding console message:", error);
+      }
     },
     toggleConsole() {
       this.showConsole = !this.showConsole;
