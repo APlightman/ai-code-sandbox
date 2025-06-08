@@ -348,14 +348,55 @@ export default {
       }
     },
     runHTMLCode() {
-      const iframe = this.$refs.outputFrame;
-      if (iframe) {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        doc.open();
-        doc.write(this.activeFile.content);
-        doc.close();
-        this.showConsole = false;
-      }
+      // First ensure we're not in console mode
+      this.showConsole = false;
+
+      // Use nextTick to ensure the iframe is rendered
+      this.$nextTick(() => {
+        try {
+          const iframe = this.$refs.outputFrame;
+
+          if (!iframe) {
+            console.error("Output iframe not found");
+            this.addConsoleMessage("error", "Output iframe not available");
+            return;
+          }
+
+          // Wait a bit for iframe to be ready
+          setTimeout(() => {
+            try {
+              const doc =
+                iframe.contentDocument || iframe.contentWindow?.document;
+
+              if (!doc) {
+                console.error("Cannot access iframe document");
+                this.addConsoleMessage(
+                  "error",
+                  "Cannot access iframe document"
+                );
+                return;
+              }
+
+              // Clear and write new content
+              doc.open();
+              doc.write(this.activeFile.content);
+              doc.close();
+            } catch (docError) {
+              console.error("Error writing to iframe:", docError);
+              this.addConsoleMessage(
+                "error",
+                `Error executing HTML: ${docError.message}`
+              );
+            }
+          }, 100);
+        } catch (error) {
+          console.error("Error in runHTMLCode:", error);
+          this.addConsoleMessage(
+            "error",
+            `Error running HTML code: ${error.message}`
+          );
+        }
+      });
     },
     runJavaScriptCode() {
       this.consoleMessages = [];
