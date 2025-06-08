@@ -448,30 +448,72 @@ export default {
       console.warn = originalWarn;
     },
     showCSSPreview() {
-      const cssContent = this.activeFile.content;
-      const htmlContent = [
-        "<!DOCTYPE html>",
-        "<html>",
-        "<head>",
-        "    <style>" + cssContent + "</style>",
-        "</head>",
-        "<body>",
-        "    <h1>CSS Preview</h1>",
-        "    <p>This is a preview of your CSS styles.</p>",
-        '    <div class="example">Example content</div>',
-        "    <button>Button</button>",
-        "</body>",
-        "</html>",
-      ].join("\n");
+      this.showConsole = false;
 
-      const iframe = this.$refs.outputFrame;
-      if (iframe) {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        doc.open();
-        doc.write(htmlContent);
-        doc.close();
-        this.showConsole = false;
-      }
+      this.$nextTick(() => {
+        try {
+          const cssContent = this.activeFile.content;
+          const htmlContent = [
+            "<!DOCTYPE html>",
+            "<html>",
+            "<head>",
+            '    <meta charset="UTF-8">',
+            '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
+            "    <title>CSS Preview</title>",
+            "    <style>" + cssContent + "</style>",
+            "</head>",
+            "<body>",
+            "    <h1>CSS Preview</h1>",
+            "    <p>This is a preview of your CSS styles.</p>",
+            '    <div class="example">Example content with custom styles</div>',
+            "    <button>Button Element</button>",
+            '    <div class="container">',
+            "        <h2>Sample Content</h2>",
+            '        <p class="text">Apply your CSS styles to see changes!</p>',
+            "    </div>",
+            "</body>",
+            "</html>",
+          ].join("\n");
+
+          setTimeout(() => {
+            try {
+              const iframe = this.$refs.outputFrame;
+
+              if (!iframe) {
+                this.addConsoleMessage("error", "Output iframe not found");
+                return;
+              }
+
+              const doc =
+                iframe.contentDocument || iframe.contentWindow?.document;
+
+              if (!doc) {
+                this.addConsoleMessage(
+                  "error",
+                  "Cannot access iframe document"
+                );
+                return;
+              }
+
+              doc.open();
+              doc.write(htmlContent);
+              doc.close();
+            } catch (docError) {
+              console.error("Error writing CSS preview:", docError);
+              this.addConsoleMessage(
+                "error",
+                `Error displaying CSS preview: ${docError.message}`
+              );
+            }
+          }, 100);
+        } catch (error) {
+          console.error("Error in showCSSPreview:", error);
+          this.addConsoleMessage(
+            "error",
+            `Error creating CSS preview: ${error.message}`
+          );
+        }
+      });
     },
     addConsoleMessage(type, content) {
       this.consoleMessages.push({
