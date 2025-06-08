@@ -344,11 +344,15 @@ export default {
       }
     },
     runCode() {
+      if (this.isExecuting) return;
+
       try {
         if (!this.activeFile || !this.activeFile.content.trim()) {
           this.addConsoleMessage("warn", "No code to run");
           return;
         }
+
+        this.isExecuting = true;
 
         if (this.activeFile.type === "html") {
           this.runHTMLCode();
@@ -362,9 +366,15 @@ export default {
             `Unsupported file type: ${this.activeFile.type}`
           );
         }
+
+        // Reset loading state after a short delay
+        setTimeout(() => {
+          this.isExecuting = false;
+        }, 500);
       } catch (error) {
         console.error("Error in runCode:", error);
         this.addConsoleMessage("error", `Error running code: ${error.message}`);
+        this.isExecuting = false;
       }
     },
     runHTMLCode() {
